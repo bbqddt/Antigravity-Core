@@ -1,41 +1,55 @@
-# --- 统帅专用：极简抗压版推演脚本 ---
+# --- 统帅专用：极简抗压版推演脚本 (Kaggle & 进度显示版) ---
 import openai
 import pandas as pd
 import time
+import os
+import streamlit as st
+from kaggle_sync import sync_latest_data  # 导入补给模块
 
-API_KEY = "AIzaSyC--Fs9TA5Ypdo62bPZfIXuZwL1OGRLG4Q" #
+# 配置区
+API_KEY = "AIzaSyC--Fs9TA5Ypdo62bPZfIXuZwL1OGRLG4Q" 
 client = openai.OpenAI(
     api_key=API_KEY,
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
 )
 
 def run_low_pressure_audit():
-    print(">>> 正在启动反重力冷却协议...")
-    # 强制增加冷却，避开 Google 敏感期
-    time.sleep(70) 
-
-    try:
-        # 仅读取最近 10 期数据，大幅降低 Token 负载
-        df = pd.read_csv(r"D:\Antigravity_V7\data\lottery_history.csv").tail(10)
-        data_info = df.to_string()
-
-        response = client.chat.completions.create(
-            model="gemini-3.1-pro-preview", 
-            messages=[
-                {"role": "system", "content": "You are a data auditor."},
-                {"role": "user", "content": f"Data:\n{data_info}\nPredict for period 2026033."}
-            ],
-            temperature=0.1 #
-        )
+    # 使用状态框防止黑屏错觉
+    with st.status("🚀 正在启动深层推演协议...", expanded=True) as status:
         
-        result = response.choices[0].message.content
-        with open("latest_predictions.csv", "w", encoding="utf-8") as f:
-            f.write(f"period,numbers\n2026033,\"{result.strip()}\"")
-        
-        print("✅ SUCCESS: 033 期数据已成功穿透锁定！")
+        st.write("📡 正在连接反重力冷却链路（强制等待 70 秒）...")
+        time.sleep(70) 
 
-    except Exception as e:
-        print(f"❌ 链路反馈: {e}")
+        try:
+            # 1. 尝试从 Kaggle 同步最新数据
+            st.write("🔍 正在从 Kaggle 获取实时数据补给...")
+            remote_path = sync_latest_data()
+            
+            if remote_path and os.path.exists(remote_path):
+                target_path = remote_path
+                st.write("✅ 远程补给：已锁定 Kaggle 实时数据")
+            else:
+                target_path = "lottery_history.csv" 
+                st.write("⚠️ 链路波动：切换至本地备份数据模式")
 
-if __name__ == "__main__":
-    run_low_pressure_audit()
+            # 2. 读取并处理数据
+            st.write("📊 正在执行数据审计与特征提取...")
+            df = pd.read_csv(target_path).tail(10)
+            data_info = df.to_string()
+
+            # 3. AI 推演
+            st.write("🤖 正在调用 Gemini-3.1-Pro 执行穿透推演...")
+            response = client.chat.completions.create(
+                model="gemini-3.1-pro-preview", 
+                messages=[
+                    {"role": "system", "content": "You are a data auditor."},
+                    {"role": "user", "content": f"Data:\n{data_info}\nPredict for period 2026033."}
+                ],
+                temperature=0.1 
+            )
+            
+            result = response.choices[0].message.content
+            
+            # 4. 结果持久化
+            with open("latest_predictions.csv", "w", encoding="utf-8") as f:
+                f.write(f"period,numbers\n202
