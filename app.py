@@ -1,27 +1,26 @@
-# --- 统帅专用：极简抗压版推演脚本 (Kaggle & 进度显示版) ---
+# --- 统帅专用：极简抗压版推演脚本 (修正 API & 语法版) ---
 import openai
 import pandas as pd
 import time
 import os
 import streamlit as st
-from kaggle_sync import sync_latest_data  # 导入补给模块
+from kaggle_sync import sync_latest_data  # 确保仓库里有这个文件
 
-# 配置区
-API_KEY = "AIzaSyC--Fs9TA5Ypdo62bPZfIXuZwL1OGRLG4Q" 
+# 配置区 - 请在此处填入您新申请的 API Key
+API_KEY = "AIzaSyBHD78cRYllItcLoLTzfkMlY-tHITyXsjc" 
 client = openai.OpenAI(
     api_key=API_KEY,
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
 )
 
 def run_low_pressure_audit():
-    # 使用状态框防止黑屏错觉
     with st.status("🚀 正在启动深层推演协议...", expanded=True) as status:
         
         st.write("📡 正在连接反重力冷却链路（强制等待 70 秒）...")
-        time.sleep(70) # 强制增加冷却
+        time.sleep(70) 
 
         try:
-            # 1. 尝试从 Kaggle 同步最新数据
+            # 1. 获取数据补给
             st.write("🔍 正在从 Kaggle 获取实时数据补给...")
             remote_path = sync_latest_data()
             
@@ -32,7 +31,7 @@ def run_low_pressure_audit():
                 target_path = "lottery_history.csv" 
                 st.write("⚠️ 链路波动：切换至本地备份数据模式")
 
-            # 2. 读取并处理数据
+            # 2. 读取数据
             st.write("📊 正在执行数据审计与特征提取...")
             df = pd.read_csv(target_path).tail(10)
             data_info = df.to_string()
@@ -67,7 +66,12 @@ def run_low_pressure_audit():
 if __name__ == "__main__":
     st.set_page_config(page_title="臻算天机", page_icon="🔮")
     st.title("🔮 臻算天机 - 极简推演中心")
-    st.info("系统已就绪，Kaggle 链路已连接。")
+    
+    # 检查本地备份文件是否存在
+    if not os.path.exists("lottery_history.csv"):
+        st.warning("🚨 警告：仓库中缺失 lottery_history.csv 备份文件，请通过 GitHub 的 'Add file' 上传！")
+    else:
+        st.info("系统已就绪，Kaggle 链路与本地备份已双重连接。")
     
     if st.button("🔥 立即开始执行 033 期推演"):
         run_low_pressure_audit()
