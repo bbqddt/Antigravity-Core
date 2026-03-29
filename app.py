@@ -18,7 +18,7 @@ def run_low_pressure_audit():
     with st.status("🚀 正在启动深层推演协议...", expanded=True) as status:
         
         st.write("📡 正在连接反重力冷却链路（强制等待 70 秒）...")
-        time.sleep(70) 
+        time.sleep(70) # 强制增加冷却
 
         try:
             # 1. 尝试从 Kaggle 同步最新数据
@@ -50,6 +50,24 @@ def run_low_pressure_audit():
             
             result = response.choices[0].message.content
             
-            # 4. 结果持久化
+            # 4. 结果持久化 (已修正截图 13 中的语法错误)
             with open("latest_predictions.csv", "w", encoding="utf-8") as f:
-                f.write(f"period,numbers\n202
+                f.write(f"period,numbers\n2026033,\"{result.strip()}\"")
+            
+            status.update(label="✅ 推演任务圆满完成！", state="complete", expanded=False)
+            
+            st.balloons()
+            st.markdown(f"### 🎯 033 期穿透推演结果：\n\n```text\n{result}\n```")
+
+        except Exception as e:
+            status.update(label="❌ 链路发生致命错误", state="error")
+            st.error(f"详细反馈: {e}")
+
+# 界面入口
+if __name__ == "__main__":
+    st.set_page_config(page_title="臻算天机", page_icon="🔮")
+    st.title("🔮 臻算天机 - 极简推演中心")
+    st.info("系统已就绪，Kaggle 链路已连接。")
+    
+    if st.button("🔥 立即开始执行 033 期推演"):
+        run_low_pressure_audit()
