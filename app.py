@@ -39,7 +39,8 @@ def run_low_pressure_audit():
             # 3. AI 推演
             st.write("🤖 正在调用 Gemini-3.1-Pro 执行穿透推演...")
             response = client.chat.completions.create(
-                model="gemini-3.1-pro-preview", 
+                model="# 将 pro 改为 flash，消耗更低，不容易报 429
+            model="gemini-1.5-flash", 
                 messages=[
                     {"role": "system", "content": "You are a data auditor."},
                     {"role": "user", "content": f"Data:\n{data_info}\nPredict for period 2026033."}
