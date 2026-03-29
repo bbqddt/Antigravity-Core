@@ -52,7 +52,7 @@ def run_low_pressure_audit():
             
             result = response.choices[0].message.content
             
-            # 5. 结果持久化 (修复之前的语法错误)
+            # 5. 结果持久化
             with open("latest_predictions.csv", "w", encoding="utf-8") as f:
                 f.write(f"period,numbers\n2026033,\"{result.strip()}\"\n")
             
